@@ -19,10 +19,6 @@ public class User {
     private String name;
 
     private UserRole role;
-
-    @Lob
-    @Column(columnDefinition = "bytea")
-    private byte[] img;
-
-
+    
+    private String img;
 }
