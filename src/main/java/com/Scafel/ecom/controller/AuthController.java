@@ -38,11 +38,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/authenticate")
-    public void createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest,
-                                          HttpServletResponse response) throws IOException, JSONException {
+    public void createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws IOException, JSONException {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
-                    authenticationRequest.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Incorrect username or password.");
         }
@@ -52,12 +50,10 @@ public class AuthController {
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
 
         if (optionalUser.isPresent()) {
-            response.getWriter().write(new JSONObject()
-                    .put("userId", optionalUser.get().getId())
-                    .put("role", optionalUser.get().getRole())
-                    .toString()
-            );
+            response.getWriter().write(new JSONObject().put("userId", optionalUser.get().getId()).put("role", optionalUser.get().getRole()).toString());
 
+            response.addHeader("Access-Control-Expose-Headers", "Authorization");
+            response.addHeader("Access-Control-Allow-Header", "Authorization, X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept, X-Custom-header");
             response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwt);
         }
     }
